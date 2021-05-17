@@ -45,18 +45,19 @@ This is how an item object should look like
 3. Create a funciton that will render all items with the in-basket = true
 4. create event listeners on the add to cart buttons that will render the item to the cart
 */
+let totalEl = document.querySelector(".total-number")
+let total = 0
 function createEl(tag) {
   return document.createElement(tag)
 }
 
 const state = {
-  items: [
+  products: [
     {
       "id": 001,
       "icon": String.raw`assets\icons\001-beetroot.svg`,
       "name": "beetroot",
       "price": 2,
-      "in-basket?": false,
       "quantity": 0
     },
     {
@@ -64,7 +65,6 @@ const state = {
       "icon": String.raw`assets\icons\002-carrot.svg`,
       "name": "carrot",
       "price": 1,
-      "in-basket?": false,
       "quantity": 0
     },
     {
@@ -72,7 +72,6 @@ const state = {
       "icon": String.raw`assets\icons\003-apple.svg`,
       "name": "apple",
       "price": 0.5,
-      "in-basket?": false,
       "quantity": 0
     },
     {
@@ -80,7 +79,6 @@ const state = {
       "icon": String.raw`assets\icons\004-apricot.svg`,
       "name": "apricot",
       "price": 0.5,
-      "in-basket?": false,
       "quantity": 0
     },
     {
@@ -88,7 +86,6 @@ const state = {
       "icon": String.raw`assets\icons\005-avocado.svg`,
       "name": "avacado",
       "price": 1,
-      "in-basket?": false,
       "quantity": 0
     },
     {
@@ -96,7 +93,6 @@ const state = {
       "icon": String.raw`assets\icons\006-bananas.svg`,
       "name": "bananas",
       "price": 2,
-      "in-basket?": false,
       "quantity": 0
     },
     {
@@ -104,7 +100,6 @@ const state = {
       "icon": String.raw`assets\icons\007-bell-pepper.svg`,
       "name": "bell pepper",
       "price": 1,
-      "in-basket?": false,
       "quantity": 0
     },
     {
@@ -112,7 +107,6 @@ const state = {
       "icon": String.raw`assets\icons\008-berry.svg`,
       "name": "berry",
       "price": 2,
-      "in-basket?": false,
       "quantity": 0
     },
     {
@@ -120,70 +114,86 @@ const state = {
       "icon": String.raw`assets\icons\009-blueberry.svg`,
       "name": "blueberry",
       "price": 1,
-      "in-basket?": false,
       "quantity": 0
     }
-  ] 
+  ],
+  cart: []
 }
 console.log(state)
-
-
-function renderItemsToStore () {
+function renderStoreItem(item) {
   let shopList = document.querySelector("ul.store--item-list")
 
-  for (const item of state.items) {
-    let newLiEl = createEl("li")
+  let newLiEl = createEl("li")
 
-    let storeIconDivEl = createEl("div")
-    storeIconDivEl.setAttribute("class", "store--item-icon")
+  let storeIconDivEl = createEl("div")
+  storeIconDivEl.setAttribute("class", "store--item-icon")
 
-    let storeIconImgEl = createEl("img")
-    storeIconImgEl.setAttribute("src", item.icon)
-    storeIconImgEl.setAttribute("alt", item.name)
+  let storeIconImgEl = createEl("img")
+  storeIconImgEl.setAttribute("src", item.icon)
+  storeIconImgEl.setAttribute("alt", item.name)
 
-    let addToCartButtonEl = createEl("button")
-    addToCartButtonEl.innerText = "Add To Cart"
+  let addToCartButtonEl = createEl("button")
+  addToCartButtonEl.innerText = "Add To Cart"
 
-    storeIconDivEl.append(storeIconImgEl)
-    newLiEl.append(storeIconDivEl, addToCartButtonEl)
-    shopList.append(newLiEl)
+  storeIconDivEl.append(storeIconImgEl)
+  newLiEl.append(storeIconDivEl, addToCartButtonEl)
+  shopList.append(newLiEl)
 
-    // Click the button, change in state, render from page
-    addToCartButtonEl.addEventListener("click", renderItemsToCart(item))
+  // Click the button, change in state, render from page
+  addToCartButtonEl.addEventListener("click", function () {
+    ++item.quantity
+    state.cart.push(item)
+    renderItemToCart(item)
+  })
+}
+function renderItemsToStore () {
 
+  for (const item of state.products) {
+    renderStoreItem(item)
+  }
 }
 renderItemsToStore()
 
-function renderItemsToCart(item) {
-  if (item["in-basket?"]) {
-    let cartItemListEl = document.querySelector(".cart--item-list")
+function renderItemToCart(item) {
+
+  let cartItemListEl = document.querySelector(".cart--item-list")
+  console.log(cart)
+
+  let newCartLiEL = createEl("li")
+
+  let cartIconImgEl = createEl("img")
+  cartIconImgEl.setAttribute("src", item.icon)
   
-    let newCartLiEL = createEl("li")
+  cartIconImgEl.setAttribute("alt", item.name)
 
-    let cartIconImgEl = createEl("img")
-    cartIconImgEl.setAttribute("src", item.icon)
-    cartIconImgEl.setAttribute("alt", item.name)
+  let nameEl = createEl("p")
+  nameEl.innerText = item.name
 
-    let nameEl = createEl("p")
-    nameEl.innerText = item.name
+  let removeButton = createEl("button")
+  removeButton.setAttribute("class", "quantity-btn remove-btn center")
 
-    let removeButton = createEl("button")
-    removeButton.setAttribute("class", "quantity-btn remove-btn center")
+  let quantityEl = createEl("span")
+  quantityEl.innerText = item.quantity
 
-    let quantityEl = createEl("span")
+  let addButton = createEl("button")
+  addButton.setAttribute("class", "quantity-btn add-btn center")
+
+  newCartLiEL.append(cartIconImgEl, nameEl, removeButton, quantityEl, addButton)
+  cartItemListEl.append(newCartLiEL)
+
+  removeButton.addEventListener("click", function () {
+    --item.quantity
     quantityEl.innerText = item.quantity
+    if(item.quantity === 0) {
+      newCartLiEL.remove()
+      let itemIndex = state.cart.indexOf(item)
+      console.log(itemIndex)
+      console.log(state.cart)
+    }
+  })
+  addButton.addEventListener("click", function () {
+    ++item.quantity
+    quantityEl.innerText = item.quantity
+  })
 
-    let addButton = createEl("button")
-    addButton.setAttribute("class", "quantity-btn add-btn center")
-
-    newCartLiEL.append(
-      cartIconImgEl,
-      nameEl,
-      removeButton,
-      quantityEl,
-      addButton
-      )
-    cartItemListEl.append(newCartLiEL)
-
-  }
 }
