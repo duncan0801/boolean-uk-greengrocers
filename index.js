@@ -153,6 +153,18 @@ function renderItemsToStore () {
   }
 }
 renderItemsToStore()
+function calculateCartTotal() {
+  //total = (quantity*price) of all items in cart
+  const totalEl = document.querySelector(".total-number")
+  let total = 0
+  for (const item of state.cart) {
+    total = total + item.quantity * item.price
+    console.log(total)
+    totalEl.innerText = `£${total}`
+  }
+
+  
+}
 
 function renderItemToCart(item) {
 
@@ -183,17 +195,20 @@ function renderItemToCart(item) {
 
   removeButton.addEventListener("click", function () {
     --item.quantity
+    calculateCartTotal()
     quantityEl.innerText = item.quantity
     if(item.quantity === 0) {
       newCartLiEL.remove()
       let itemIndex = state.cart.indexOf(item)
       console.log(itemIndex)
       console.log(state.cart)
+      calculateCartTotal()
     }
   })
   addButton.addEventListener("click", function () {
     ++item.quantity
     quantityEl.innerText = item.quantity
+    calculateCartTotal()
   })
 
 }
