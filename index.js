@@ -50,6 +50,7 @@ let total = 0
 function createEl(tag) {
   return document.createElement(tag)
 }
+
 //TODO Take away the icon key
 const state = {
   products: [
@@ -57,64 +58,57 @@ const state = {
       "id": "001-beetroot",
       "name": "beetroot",
       "price": 2,
-      "quantity": 0
     },
     {
       "id": "002-carrot",
       "name": "carrot",
       "price": 1,
-      "quantity": 0
     },
     {
       "id": "003-apple",
       "name": "apple",
       "price": 0.5,
-      "quantity": 0
     },
     {
       "id": "004-apricot",
       "name": "apricot",
       "price": 0.5,
-      "quantity": 0
     },
     {
       "id": "005-avocado",
       "name": "avocado",
       "price": 1,
-      "quantity": 0
     },
     {
       "id": "006-bananas",
       "name": "bananas",
       "price": 2,
-      "quantity": 0
     },
     {
       "id": "007-bell-pepper",
       "name": "bell pepper",
       "price": 1,
-      "quantity": 0
     },
     {
       "id": "008-berry",
       "name": "berry",
       "price": 2,
-      "quantity": 0
     },
     {
       "id": "009-blueberry",
       "name": "blueberry",
       "price": 1,
-      "quantity": 0
     }
   ],
-  cart: []
+  cart: [
+
+  ]
 }
 function getImagPath(item) {
   return `./assets/icons/${item.id}.svg`
 }
-console.log(state)
-function renderStoreItem(item) {
+
+function renderStoreItem(storeItem) {
   let shopList = document.querySelector("ul.store--item-list")
 
   let newLiEl = createEl("li")
@@ -123,8 +117,8 @@ function renderStoreItem(item) {
   storeIconDivEl.setAttribute("class", "store--item-icon")
 
   let storeIconImgEl = createEl("img")
-  storeIconImgEl.setAttribute("src", getImagPath(item))
-  storeIconImgEl.setAttribute("alt", item.name)
+  storeIconImgEl.setAttribute("src", getImagPath(storeItem))
+  storeIconImgEl.setAttribute("alt", storeItem.name)
 
   let addToCartButtonEl = createEl("button")
   addToCartButtonEl.innerText = "Add To Cart"
@@ -133,13 +127,33 @@ function renderStoreItem(item) {
   newLiEl.append(storeIconDivEl, addToCartButtonEl)
   shopList.append(newLiEl)
 
-  // Click the button, change in state, render from page
+  // When clicking the add to cart button:
+  //  - ✔Check if the item is already in the cart 
+  //  - ✔the item should be added to the cart with an ID and a quantity of 1
+  //  -✔ (different action) the item should be increased by one every time it is pressed after
+  // if the item quantity === 0, remove the item from the cart
   addToCartButtonEl.addEventListener("click", function () {
-    ++item.quantity
-    state.cart.push(item)
-    renderItemToCart(item)
+    console.log("HERE")
+    let product = state.cart.find(function (possibleCartItem) {
+      return possibleCartItem.id === storeItem.id
+       
+    })
+    if (!product) {
+      let newCartItem = {
+        "id": storeItem.id,
+        "quantity": 1
+      }
+      state.cart.push(newCartItem)
+      renderAllCartItems()
+  
+    }
+    else if (product) {
+      ++product.quantity
+      renderAllCartItems()
+    }
   })
 }
+
 function renderItemsToStore () {
 
   for (const item of state.products) {
@@ -147,31 +161,25 @@ function renderItemsToStore () {
   }
 }
 renderItemsToStore()
-function calculateCartTotal() {
-  //total = (quantity*price) of all items in cart
-  const totalEl = document.querySelector(".total-number")
-  let total = 0
-  for (const item of state.cart) {
-    total = total + item.quantity * item.price
-    console.log(total)
-    totalEl.innerText = `£${total}`
-  }
-}
 
 function renderItemToCart(item) {
 
+  let product = state.products.find(function(product) {
+    return item.id === product.id
+  })
+  console.log("item:", item)
+  console.log("product",product)
+
   let cartItemListEl = document.querySelector(".cart--item-list")
-  console.log(cart)
 
   let newCartLiEL = createEl("li")
 
   let cartIconImgEl = createEl("img")
-  cartIconImgEl.setAttribute("src", item.icon)
-  
-  cartIconImgEl.setAttribute("alt", item.name)
+  cartIconImgEl.setAttribute("src", getImagPath(item))
+  cartIconImgEl.setAttribute("alt", product.name)
 
   let nameEl = createEl("p")
-  nameEl.innerText = item.name
+  nameEl.innerText = product.name
 
   let removeButton = createEl("button")
   removeButton.setAttribute("class", "quantity-btn remove-btn center")
@@ -187,20 +195,23 @@ function renderItemToCart(item) {
 
   removeButton.addEventListener("click", function () {
     --item.quantity
-    calculateCartTotal()
     quantityEl.innerText = item.quantity
     if(item.quantity === 0) {
       newCartLiEL.remove()
-      let itemIndex = state.cart.indexOf(item)
-      console.log(itemIndex)
-      console.log(state.cart)
-      calculateCartTotal()
     }
   })
   addButton.addEventListener("click", function () {
     ++item.quantity
     quantityEl.innerText = item.quantity
-    calculateCartTotal()
   })
+  return cartItemListEl
+}
+let cartEl = document.querySelector(".cart--item-list")
 
+function renderAllCartItems (newCartData) {
+  cartEl.innerHTML = ""
+
+  for (item of state.cart) {
+    renderItemToCart(item)
+  }
 }
