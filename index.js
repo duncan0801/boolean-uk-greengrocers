@@ -50,74 +50,68 @@ let total = 0
 function createEl(tag) {
   return document.createElement(tag)
 }
-
+//TODO Take away the icon key
 const state = {
   products: [
     {
-      "id": 001,
-      "icon": String.raw`assets\icons\001-beetroot.svg`,
+      "id": "001-beetroot",
       "name": "beetroot",
       "price": 2,
       "quantity": 0
     },
     {
-      "id": 002,
-      "icon": String.raw`assets\icons\002-carrot.svg`,
+      "id": "002-carrot",
       "name": "carrot",
       "price": 1,
       "quantity": 0
     },
     {
-      "id": 003,
-      "icon": String.raw`assets\icons\003-apple.svg`,
+      "id": "003-apple",
       "name": "apple",
       "price": 0.5,
       "quantity": 0
     },
     {
-      "id": 004,
-      "icon": String.raw`assets\icons\004-apricot.svg`,
+      "id": "004-apricot",
       "name": "apricot",
       "price": 0.5,
       "quantity": 0
     },
     {
-      "id": 005,
-      "icon": String.raw`assets\icons\005-avocado.svg`,
-      "name": "avacado",
+      "id": "005-avocado",
+      "name": "avocado",
       "price": 1,
       "quantity": 0
     },
     {
-      "id": 006,
-      "icon": String.raw`assets\icons\006-bananas.svg`,
+      "id": "006-bananas",
       "name": "bananas",
       "price": 2,
       "quantity": 0
     },
     {
-      "id": 007,
-      "icon": String.raw`assets\icons\007-bell-pepper.svg`,
+      "id": "007-bell-pepper",
       "name": "bell pepper",
       "price": 1,
       "quantity": 0
     },
     {
-      "id": 008,
-      "icon": String.raw`assets\icons\008-berry.svg`,
+      "id": "008-berry",
       "name": "berry",
       "price": 2,
       "quantity": 0
     },
     {
-      "id": 009,
-      "icon": String.raw`assets\icons\009-blueberry.svg`,
+      "id": "009-blueberry",
       "name": "blueberry",
       "price": 1,
       "quantity": 0
     }
   ],
   cart: []
+}
+function getImagPath(item) {
+  return `./assets/icons/${item.id}.svg`
 }
 console.log(state)
 function renderStoreItem(item) {
@@ -129,7 +123,7 @@ function renderStoreItem(item) {
   storeIconDivEl.setAttribute("class", "store--item-icon")
 
   let storeIconImgEl = createEl("img")
-  storeIconImgEl.setAttribute("src", item.icon)
+  storeIconImgEl.setAttribute("src", getImagPath(item))
   storeIconImgEl.setAttribute("alt", item.name)
 
   let addToCartButtonEl = createEl("button")
@@ -162,8 +156,6 @@ function calculateCartTotal() {
     console.log(total)
     totalEl.innerText = `£${total}`
   }
-
-  
 }
 
 function renderItemToCart(item) {
