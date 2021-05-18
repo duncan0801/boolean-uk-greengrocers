@@ -57,47 +57,47 @@ const state = {
     {
       "id": "001-beetroot",
       "name": "beetroot",
-      "price": 2,
+      "price": 0.35,
     },
     {
       "id": "002-carrot",
       "name": "carrot",
-      "price": 1,
+      "price": 0.50,
     },
     {
       "id": "003-apple",
       "name": "apple",
-      "price": 0.5,
+      "price": 1.25,
     },
     {
       "id": "004-apricot",
       "name": "apricot",
-      "price": 0.5,
+      "price": 0.65,
     },
     {
       "id": "005-avocado",
       "name": "avocado",
-      "price": 1,
+      "price": 1.00,
     },
     {
       "id": "006-bananas",
       "name": "bananas",
-      "price": 2,
+      "price": 2.00,
     },
     {
       "id": "007-bell-pepper",
       "name": "bell pepper",
-      "price": 1,
+      "price": 0.45,
     },
     {
       "id": "008-berry",
       "name": "berry",
-      "price": 2,
+      "price": 0.35,
     },
     {
       "id": "009-blueberry",
       "name": "blueberry",
-      "price": 1,
+      "price": 0.90,
     }
   ],
   cart: [
@@ -133,7 +133,7 @@ function renderStoreItem(storeItem) {
   //  -✔ (different action) the item should be increased by one every time it is pressed after
   // if the item quantity === 0, remove the item from the cart
   addToCartButtonEl.addEventListener("click", function () {
-    console.log("HERE")
+   
     let product = state.cart.find(function (possibleCartItem) {
       return possibleCartItem.id === storeItem.id
        
@@ -144,11 +144,13 @@ function renderStoreItem(storeItem) {
         "quantity": 1
       }
       state.cart.push(newCartItem)
+      calculateTotalCost()
       renderAllCartItems()
   
     }
     else if (product) {
       ++product.quantity
+      calculateTotalCost()
       renderAllCartItems()
     }
   })
@@ -196,13 +198,16 @@ function renderItemToCart(item) {
   removeButton.addEventListener("click", function () {
     --item.quantity
     quantityEl.innerText = item.quantity
+    calculateTotalCost ()
     if(item.quantity === 0) {
       newCartLiEL.remove()
+      calculateTotalCost ()
     }
   })
   addButton.addEventListener("click", function () {
     ++item.quantity
     quantityEl.innerText = item.quantity
+    calculateTotalCost ()
   })
   return cartItemListEl
 }
@@ -214,4 +219,24 @@ function renderAllCartItems (newCartData) {
   for (item of state.cart) {
     renderItemToCart(item)
   }
+}
+
+function calculateTotalCost () {
+  //1. Go through current cart and get quantity of each item 
+  //2. refer to state.products to get price 
+  //3. total = total + quantity*price
+  //4. Add the total to the total span in the document
+  let totalEl = document.querySelector(".total-number")
+
+  let total = 0
+  for (item of state.cart) {
+    let productToGetPriceFrom = state.products.find(function (product) {
+      return item.id === product.id
+    })
+    total += productToGetPriceFrom.price * item.quantity
+  }
+
+  totalEl.innerText = `£${total.toFixed(2)}`
+
+  console.log("HERE")
 }
