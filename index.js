@@ -169,8 +169,6 @@ function renderItemToCart(item) {
   let product = state.products.find(function(product) {
     return item.id === product.id
   })
-  console.log("item:", item)
-  console.log("product",product)
 
   let cartItemListEl = document.querySelector(".cart--item-list")
 
@@ -200,6 +198,13 @@ function renderItemToCart(item) {
     quantityEl.innerText = item.quantity
     calculateTotalCost ()
     if(item.quantity === 0) {
+      console.log("Cart:", state.cart)
+      for (carItemIndex in state.cart) {
+        if (state.cart[carItemIndex].id === item.id) {
+          state.cart.splice(carItemIndex, 1)
+          console.log("Cart:", state.cart)
+        }
+      }
       newCartLiEL.remove()
       calculateTotalCost ()
     }
@@ -229,6 +234,7 @@ function calculateTotalCost () {
   let totalEl = document.querySelector(".total-number")
 
   let total = 0
+  
   for (item of state.cart) {
     let productToGetPriceFrom = state.products.find(function (product) {
       return item.id === product.id
@@ -238,5 +244,5 @@ function calculateTotalCost () {
 
   totalEl.innerText = `£${total.toFixed(2)}`
 
-  console.log("HERE")
+  
 }
